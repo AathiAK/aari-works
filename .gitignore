@@ -1,0 +1,36 @@
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+
+# Node / Frontend
+node_modules/
+dist/
+.vite/
+
+# Docker
+*.log
+
+# Database backups
+*.sql
+*.sql.gz
+backups/
+
+# Uploaded files (local dev artifacts, not committed)
+backend/uploads/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+*.swp
