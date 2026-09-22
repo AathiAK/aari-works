@@ -1,0 +1,32 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: aari_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      # Exposed to host for local development only, so you can connect
+      # with a local psql client or a GUI tool (DBeaver, TablePlus, etc.).
+      # This port is NOT published in docker-compose.prod.yml (Phase 20/26).
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - aari_network
+
+networks:
+  aari_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
