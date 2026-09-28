@@ -1,10 +1,5 @@
 """
 Application configuration, loaded from environment variables.
-
-Locally, Docker Compose injects these via env_file: .env (added when the
-backend service joins docker-compose.yml in Phase 17). When running the
-backend standalone (outside Docker), python-dotenv-style loading via
-pydantic-settings' env_file picks up backend/.env instead.
 """
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -30,9 +25,16 @@ class Settings(BaseSettings):
     image_storage: str = "local"
     local_upload_dir: str = "/app/uploads"
 
-    # AWS (all optional — unused until Phase 25, must never be required locally)
+    # AWS (all optional — unused until Phase 25)
     aws_region: str | None = None
     aws_s3_bucket: str | None = None
+
+    # Checkout pricing — simple flat rules appropriate for a single small
+    # business selling in one country. Revisit only if the business
+    # actually needs tiered/regional shipping or tax later.
+    shipping_flat_amount: float = 99.00
+    free_shipping_threshold: float = 2000.00
+    tax_rate_percent: float = 0.0  # set to e.g. 5.0 if GST/tax applies
 
 
 settings = Settings()

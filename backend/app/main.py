@@ -8,7 +8,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.api.routes import auth, cart, categories, health, products
+from app.api.routes import addresses, auth, cart, categories, checkout, health, products
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("aari_works")
@@ -35,3 +35,5 @@ app.include_router(auth.router)
 app.include_router(categories.router)
 app.include_router(products.router)
 app.include_router(cart.router)
+app.include_router(addresses.router)
+app.include_router(checkout.router)
