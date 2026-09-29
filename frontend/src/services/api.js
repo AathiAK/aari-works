@@ -1,8 +1,6 @@
 /**
  * Central Axios instance. Every API call in the app goes through this
- * file — components never call axios directly. A request interceptor
- * attaches the bearer token; a response interceptor logs the user out
- * on a 401 (expired/invalid token) so stale sessions don't linger.
+ * file — components never call axios directly.
  */
 
 import axios from 'axios'
@@ -33,6 +31,13 @@ api.interceptors.response.use(
 )
 
 export function apiErrorMessage(error, fallback = 'Something went wrong. Please try again.') {
+  // No response at all means the request never reached the server —
+  // backend down, CORS rejection, or no network. Distinguish this from
+  // a real error response, since the fix a person needs is different
+  // ("try again shortly" vs. "check your input").
+  if (error?.request && !error?.response) {
+    return "Can't reach the server right now. Please check your connection and try again."
+  }
   const detail = error?.response?.data?.detail
   if (typeof detail === 'string') return detail
   if (Array.isArray(detail) && detail[0]?.msg) return detail[0].msg

@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { addCartItem, apiErrorMessage, fetchProduct } from '../services/api'
+import { apiErrorMessage, fetchProduct } from '../services/api'
 import { useAuth } from '../context/AuthContext'
+import { useCart } from '../context/CartContext'
 import Spinner from '../components/Spinner'
 
 export default function ProductDetails() {
   const { id } = useParams()
   const { user } = useAuth()
+  const { addItem } = useCart()
   const navigate = useNavigate()
   const [product, setProduct] = useState(null)
   const [quantity, setQuantity] = useState(1)
@@ -24,7 +26,7 @@ export default function ProductDetails() {
     setMessage('')
     setAdding(true)
     try {
-      await addCartItem(product.id, quantity)
+      await addItem(product.id, quantity)
       setMessage('Added to cart.')
     } catch (err) {
       setError(apiErrorMessage(err, 'Could not add this item to your cart.'))

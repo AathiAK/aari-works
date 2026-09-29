@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import {
-  apiErrorMessage, fetchAdminOrders, refundPayment, updateOrderStatus,
-} from '../../services/api'
+import { apiErrorMessage, fetchAdminOrders, updateOrderStatus } from '../../services/api'
 import StatusBadge from '../../components/StatusBadge'
 import Spinner from '../../components/Spinner'
 
@@ -48,19 +46,6 @@ export default function AdminOrders() {
     }
   }
 
-  async function refund(order) {
-    if (!order.payment_status || order.payment_status !== 'SUCCESS') return
-    setError('')
-    try {
-      // payment id isn't in the list row; fetch order detail's payment id via admin order list
-      // simplest: call refund by looking up the order's payment through the order detail page instead.
-      // Kept here as a guarded no-op prompt to use the detail view.
-      alert('Open the order detail page to refund this order\'s payment.')
-    } catch (err) {
-      setError(apiErrorMessage(err))
-    }
-  }
-
   if (!orders) return <Spinner />
 
   return (
@@ -96,6 +81,8 @@ export default function AdminOrders() {
                     Mark {NEXT_STATUS[o.status].replaceAll('_', ' ')}
                   </button>
                 )}
+                {' '}
+                <Link to={`/admin/orders/${o.id}`} className="btn btn-secondary btn-sm">Refund / details</Link>
               </td>
             </tr>
           ))}

@@ -32,12 +32,21 @@ class Settings(BaseSettings):
     # Checkout pricing: simple flat rules for a single small business.
     shipping_flat_amount: float = 99.00
     free_shipping_threshold: float = 2000.00
-    tax_rate_percent: float = 0.0  # set to e.g. 5.0 if GST/tax applies
+    tax_rate_percent: float = 0.0
 
     # Payments. "mock" runs fully locally with no credentials.
-    # NEVER deploy to production with PAYMENT_PROVIDER=mock.
     payment_provider: str = "mock"
     payment_currency: str = "INR"
+
+    # CORS: comma-separated list of allowed frontend origins. Defaults
+    # cover Vite's dev server (5173) and localhost:80 (once Nginx fronts
+    # the app from Phase 18 onward). Production origins are added via
+    # the .env on EC2, never hardcoded here.
+    cors_origins: str = "http://localhost:5173,http://localhost"
+
+    @property
+    def cors_origin_list(self) -> list[str]:
+        return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
 
 
 settings = Settings()

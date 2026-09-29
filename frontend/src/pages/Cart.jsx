@@ -1,25 +1,18 @@
-import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { apiErrorMessage, fetchCart, removeCartItem, updateCartItem } from '../services/api'
-import Spinner from '../components/Spinner'
+import { apiErrorMessage } from '../services/api'
+import { useCart } from '../context/CartContext'
+import { useState } from 'react'
 
 export default function Cart() {
-  const [cart, setCart] = useState(null)
+  const { cart, updateItem, removeItem } = useCart()
   const [error, setError] = useState('')
   const navigate = useNavigate()
-
-  function load() {
-    fetchCart().then((res) => setCart(res.data)).catch(() => setError('Could not load your cart.'))
-  }
-
-  useEffect(load, [])
 
   async function changeQty(item, newQty) {
     setError('')
     if (newQty < 1) return
     try {
-      const res = await updateCartItem(item.id, newQty)
-      setCart(res.data)
+      await updateItem(item.id, newQty)
     } catch (err) {
       setError(apiErrorMessage(err, 'Could not update quantity.'))
     }
@@ -28,14 +21,11 @@ export default function Cart() {
   async function remove(item) {
     setError('')
     try {
-      const res = await removeCartItem(item.id)
-      setCart(res.data)
+      await removeItem(item.id)
     } catch (err) {
       setError(apiErrorMessage(err, 'Could not remove this item.'))
     }
   }
-
-  if (!cart) return <Spinner />
 
   return (
     <div className="container" style={{ padding: '2rem 1.5rem' }}>

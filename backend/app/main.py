@@ -28,15 +28,17 @@ from app.core.config import settings
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("aari_works")
 
-# Ensure the upload directory exists before StaticFiles tries to mount it —
-# a missing directory would make the mount fail at startup.
 os.makedirs(os.path.join(settings.local_upload_dir, "products"), exist_ok=True)
 
 app = FastAPI(title="Aari Works API", version="0.1.0")
 
+# Tightened from Phase 5's allow_origins=["*"]: an explicit list is both
+# more correct (wildcard + credentials is disallowed by browsers in
+# credentialed mode) and scoped to exactly what should be able to call
+# this API. Add production origins to CORS_ORIGINS in .env, not here.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.cors_origin_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -61,10 +63,6 @@ app.include_router(payments.router)
 app.include_router(admin.router)
 app.include_router(product_images.router)
 
-# Serves uploaded files directly during local development. In Phase 18,
-# Nginx will proxy /uploads to the backend rather than the browser
-# hitting this port directly — the URL shape (/uploads/products/...)
-# stays identical either way, so no stored image_url ever needs rewriting.
 app.mount(
     "/uploads",
     StaticFiles(directory=settings.local_upload_dir),
