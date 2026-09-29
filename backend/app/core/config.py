@@ -25,16 +25,19 @@ class Settings(BaseSettings):
     image_storage: str = "local"
     local_upload_dir: str = "/app/uploads"
 
-    # AWS (all optional — unused until Phase 25)
+    # AWS (all optional; unused until Phase 25)
     aws_region: str | None = None
     aws_s3_bucket: str | None = None
 
-    # Checkout pricing — simple flat rules appropriate for a single small
-    # business selling in one country. Revisit only if the business
-    # actually needs tiered/regional shipping or tax later.
+    # Checkout pricing: simple flat rules for a single small business.
     shipping_flat_amount: float = 99.00
     free_shipping_threshold: float = 2000.00
     tax_rate_percent: float = 0.0  # set to e.g. 5.0 if GST/tax applies
+
+    # Payments. "mock" runs fully locally with no credentials.
+    # NEVER deploy to production with PAYMENT_PROVIDER=mock.
+    payment_provider: str = "mock"
+    payment_currency: str = "INR"
 
 
 settings = Settings()
