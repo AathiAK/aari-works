@@ -1,0 +1,26 @@
+# Single-stage, dev-only image: includes build tools (so pip install
+# works without a separate build stage) and runs with --reload for live
+# code changes. Never used for production — see Dockerfile for that.
+FROM python:3.12-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    libpq-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Application code is NOT copied here — docker-compose.dev.yml (Phase
+# 17) bind-mounts the local backend/ directory over /app instead, so
+# edits on your host are picked up by --reload without rebuilding the
+# image. This COPY exists only so `docker build` alone (without compose)
+# still produces a runnable image for quick manual testing.
+COPY . .
+
+EXPOSE 8000
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
