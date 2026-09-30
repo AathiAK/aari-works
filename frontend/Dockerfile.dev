@@ -1,0 +1,17 @@
+# Dev-mode image: runs Vite's own dev server with hot reload, rather
+# than building static files. Mirrors backend/Dockerfile.dev's role —
+# used if docker-compose.dev.yml bind-mounts source over this image.
+# In practice you've been running `npm run dev` directly on your host,
+# which remains the simpler option; this exists for parity/completeness.
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY package.json package-lock.json* ./
+RUN npm install
+
+COPY . .
+
+EXPOSE 5173
+
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
